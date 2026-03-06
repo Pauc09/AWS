@@ -65,6 +65,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
+          command_timeout: 5m
           script: |
             source /home/ubuntu/environment/venv/bin/activate
             pkill -f uvicorn || true
@@ -72,6 +73,5 @@ jobs:
             nohup uvicorn app.main:app --host 0.0.0.0 --port 8000 > /tmp/backend.log 2>&1 &
             pkill -f "vite" || true
             cd /home/ubuntu/environment/chinook-frontend
-            npm install --silent
             nohup npm run dev -- --host > /tmp/frontend.log 2>&1 &
-            echo "Servicios reiniciados correctamente"
+            echo "Servicios reiniciados"
