@@ -70,8 +70,9 @@ jobs:
             source /home/ubuntu/environment/venv/bin/activate
             pkill -f uvicorn || true
             cd /home/ubuntu/environment/fastapi-rds
-            nohup uvicorn app.main:app --host 0.0.0.0 --port 8000 > /tmp/backend.log 2>&1 &
+            nohup uvicorn app.main:app --host 0.0.0.0 --port 8000 > /tmp/backend.log 2>&1 & disown
             pkill -f "vite" || true
             cd /home/ubuntu/environment/chinook-frontend
-            nohup npm run dev -- --host > /tmp/frontend.log 2>&1 &
+            nohup npm run dev -- --host > /tmp/frontend.log 2>&1 & disown
+            sleep 3
             echo "Servicios reiniciados"
