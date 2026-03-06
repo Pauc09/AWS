@@ -1,0 +1,76 @@
+name: CI/CD Chinook
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  test-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Instalar dependencias backend
+        run: |
+          cd backend
+          pip install fastapi uvicorn sqlalchemy aiomysql pydantic-settings pytest pytest-asyncio httpx pytest-cov
+
+      - name: Correr pruebas backend
+        env:
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        run: |
+          cd backend
+          pytest tests/ -v --cov=app --cov-report=term-missing
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test-backend
+    if: success()
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v3
+
+      - name: Copiar backend al EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "backend/"
+          target: "/home/ubuntu/environment/fastapi-rds"
+          strip_components: 1
+
+      - name: Copiar frontend al EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "frontend/"
+          target: "/home/ubuntu/environment/chinook-frontend"
+          strip_components: 1
+
+      - name: Reiniciar servicios
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            source /home/ubuntu/environment/venv/bin/activate
+            pkill -f uvicorn || true
+            nohup uvicorn app.main:app --host 0.0.0.0 --port 8000 --app-dir /home/ubuntu/environment/fastapi-rds > /tmp/backend.log 2>&1 &
+            pkill -f "vite" || true
+            cd /home/ubuntu/environment/chinook-frontend
+            npm install
+            nohup npm run dev -- --host > /tmp/frontend.log 2>&1 &
+            echo "Servicios reiniciados"
