@@ -18,7 +18,7 @@ export default function App() {
           🎵 Chinook
         </Link>
         <Link to="/purchase" style={{ color: "white", textDecoration: "none", fontSize: "1rem" }}>
-          🛒 Carrito ({cart.length})
+          🛒Mi  Carrito (Pau)  ({cart.length})
         </Link>
       </nav>
 
