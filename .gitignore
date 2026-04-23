@@ -1,9 +1,5 @@
+﻿*.pem
+*.zip
+response.json
 __pycache__/
-*.pyc
 .env
-venv/
-.venv/
-node_modules/
-backend/.coverage
-.c9/
-*.log
