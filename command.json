@@ -1,0 +1,5 @@
+{
+    "Name": "glueetl",
+    "ScriptLocation": "s3://chinook-dw-pc/glue-scripts/etl-dim-date.py",
+    "PythonVersion": "3"
+}

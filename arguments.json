@@ -1,0 +1,5 @@
+{
+    "--DIM_DATE_OUTPUT_PATH": "s3://chinook-dw-pc/dim_date/",
+    "--additional-python-modules": "holidays",
+    "--TempDir": "s3://chinook-dw-pc/tmp/glue/"
+}

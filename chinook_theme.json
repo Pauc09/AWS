@@ -1,0 +1,13 @@
+{
+  "name": "Chinook Theme",
+  "dataColors": [
+    "#378ADD",
+    "#1D9E75", 
+    "#D4537E",
+    "#BA7517",
+    "#F8F7F4"
+  ],
+  "background": "#F8F7F4",
+  "foreground": "#000000",
+  "tableAccent": "#378ADD"
+}
